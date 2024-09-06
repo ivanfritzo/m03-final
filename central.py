@@ -1,8 +1,46 @@
-# Parte 1: Cargar los datos
-def cargar_datos(lineas_archivo):
-    # Completar
-    pass
+#se importa la libreria pandas para el manejo de archivos CSV
+import pandas as pd
 
+def cargar_datos(lineas_archivos):
+    df = pd.read_csv("movies.csv")
+
+    # Crea un conjunto para almacenar los generos
+    generos_peliculas = set()
+    # Itera por la columna "generos" y agrega los generos al conjunto
+    for generos in df["generos"]:
+        generos_peliculas.update(generos.split(", "))
+    #este print es solo para revisar
+    print(generos_peliculas)
+
+    # Crear un diccionario de películas por género
+    peliculas_por_genero = {}
+    #Este es un metodo de la libreria panda que permite recorrer cada fila del DataFrame
+    for index, row in df.iterrows():
+        titulo = row["titulo"]
+        generos = row["generos"].split(", ")
+        for genero in generos:
+            if genero not in peliculas_por_genero:
+                peliculas_por_genero[genero] = []
+            peliculas_por_genero[genero].append(titulo)
+    #este print es solo para revisar
+    print("")
+    print(peliculas_por_genero)
+
+    # Crear una lista de tuplas con la información de las películas
+    info_peliculas = []
+    for index, row in df.iterrows():
+        titulo = row["titulo"]
+        popularidad = row["popularidad"]
+        voto_promedio = row["voto_promedio"]
+        cantidad_votos = row["cantidad_votos"]
+        generos = row["generos"].split(", ")
+
+        # Crear la tupla con el formato especificado
+        tupla_pelicula = (titulo, popularidad, voto_promedio, cantidad_votos, generos)
+        info_peliculas.append(tupla_pelicula)
+
+    # Retornar la tupla con los tres elementos
+    return generos_peliculas, peliculas_por_genero, info_peliculas
 
 # Parte 2: Completar las consultas
 def obtener_puntaje_y_votos(nombre_pelicula):
@@ -45,7 +83,7 @@ def solicitar_accion():
 
 def leer_archivo():
     lineas_peliculas = []
-    with open("peliculas.csv", "r", encoding="utf-8") as datos:
+    with open("movies.csv", "r", encoding="utf-8") as datos:
         for linea in datos.readlines()[1:]:
             lineas_peliculas.append(linea.strip())
     return lineas_peliculas
