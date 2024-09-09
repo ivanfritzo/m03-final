@@ -1,32 +1,24 @@
 #se importa la libreria pandas para el manejo de archivos CSV
 import pandas as pd
-
+# Parte 1: Cargar Datos
 def cargar_datos(lineas_archivos):
     df = pd.read_csv("movies.csv")
 
     # Crea un conjunto para almacenar los generos
-    generos_peliculas = set()
-    # Itera por la columna "generos" y agrega los generos al conjunto
-    for generos in df["generos"]:
-        generos_peliculas.update(generos.split(", "))
-    #este print es solo para revisar
-    print(generos_peliculas)
+    generos_peliculas = set(df["generos"])
 
     # Crear un diccionario de películas por género
     peliculas_por_genero = {}
-    #Este es un metodo de la libreria panda que permite recorrer cada fila del DataFrame
+    #Este es un metodo de la libreria pandas que permite recorrer cada fila del DataFrame
     for index, row in df.iterrows():
         titulo = row["titulo"]
         generos = row["generos"].split(", ")
         for genero in generos:
             if genero not in peliculas_por_genero:
                 peliculas_por_genero[genero] = []
-            peliculas_por_genero[genero].append(titulo)
-    #este print es solo para revisar
-    print("")
-    print(peliculas_por_genero)
+            peliculas_por_genero[genero].append(titulo)      
 
-    # Crear una lista de tuplas con la información de las películas
+    # Crear una lista con el formato (titulo, popularidad, voto promedio, cant de votos y generos)
     info_peliculas = []
     for index, row in df.iterrows():
         titulo = row["titulo"]
@@ -35,34 +27,60 @@ def cargar_datos(lineas_archivos):
         cantidad_votos = row["cantidad_votos"]
         generos = row["generos"].split(", ")
 
-        # Crear la tupla con el formato especificado
+        # Crea la tupla con el formato y agrega la informacion
         tupla_pelicula = (titulo, popularidad, voto_promedio, cantidad_votos, generos)
         info_peliculas.append(tupla_pelicula)
 
-    # Retornar la tupla con los tres elementos
     return generos_peliculas, peliculas_por_genero, info_peliculas
+
 
 # Parte 2: Completar las consultas
 def obtener_puntaje_y_votos(nombre_pelicula):
-    # Cargar las lineas con la data del archivo
-    lineas_archivo = leer_archivo()
-    # Completar con lo que falta aquí
-    pass
+    df = pd.read_csv("movies.csv")
+
+    # Buscar la pelicula en el DataFrame con el mismo nombre sin importar mayusculas
+    pelicula = df[df["titulo"].str.match(f"^{nombre_pelicula}$", case=False)]
+    print(pelicula)
+
+    # Extrae el puntaje promedio y la cantidad de votos de la pelicula previamente escrita
+    voto_promedio = pelicula["voto_promedio"].values[0]
+    cantidad_votos = pelicula["cantidad_votos"].values[0]
+    return voto_promedio, cantidad_votos
 
 
 def filtrar_y_ordenar(genero_pelicula):
-    # Cargar las lineas con la data del archivo
-    lineas_archivo = leer_archivo()
-    # Completar con lo que falta aquí
-    pass
+    df = pd.read_csv("movies.csv")
+
+    # Filtra las peliculas del genero especificado
+    peliculas_filtradas = df[df["generos"].str.contains(genero_pelicula, case=False)]
+    
+    # Ordenar las películas por nombre (Z-A)
+    peliculas_ordenadas = peliculas_filtradas.sort_values(by="titulo", ascending=False)
+    
+    # Extraer los titulos de las peliculas
+    nombres_peliculas = peliculas_ordenadas["titulo"].tolist()
+    
+    # Filtra, ordena y extrae los títulos en una sola línea
+    #nombres_peliculas = df[df["generos"].str.contains(genero_pelicula, case=False)].sort_values(by="titulo", ascending=False)["titulo"].tolist()
+    return nombres_peliculas
+
 
 
 def obtener_estadisticas(genero_pelicula, criterio):
-    # Cargar las lineas con la data del archivo
-    lineas_archivo = leer_archivo()
-    # Completar con lo que falta aquí
-    pass
+    df = pd.read_csv("movies.csv")
 
+    # Filtra las peliculas del genero especificado
+    peliculas_filtradas = df[df["generos"].str.contains(genero_pelicula, case=False)]
+    
+    # Extraer los valores del criterio
+    valores_criterio = peliculas_filtradas[criterio]
+    
+    # Calcular el máximo, mínimo y promedio
+    maximo = valores_criterio.max()
+    minimo = valores_criterio.min()
+    promedio = round(valores_criterio.mean(),2)
+    
+    return maximo, minimo, promedio
 
 # NO ES NECESARIO MODIFICAR DESDE AQUI HACIA ABAJO
 
@@ -94,10 +112,17 @@ def revisar_estructuras(generos_peliculas, peliculas_por_genero, info_peliculas)
     for genero in generos_peliculas:
         print(f"    - {genero}")
 
+
+#========= se modificaron unos datos=========
+    #print("\nTítulos de películas por genero:")
+    #for genero in peliculas_por_genero:
+    #    print(f"    genero: {genero[0]}")
+    #    for titulo in genero[1]:
+    #        print(f"        - {titulo}")            
     print("\nTítulos de películas por genero:")
-    for genero in peliculas_por_genero:
-        print(f"    genero: {genero[0]}")
-        for titulo in genero[1]:
+    for genero, peliculas in peliculas_por_genero.items():
+        print(f"    genero: {genero}")
+        for titulo in peliculas:
             print(f"        - {titulo}")
 
     print("\nInformación de cada película:")
