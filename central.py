@@ -78,7 +78,7 @@ def obtener_estadisticas(genero_pelicula, criterio):
     # Calcular el máximo, mínimo y promedio
     maximo = valores_criterio.max()
     minimo = valores_criterio.min()
-    promedio = round(valores_criterio.mean(),2)
+    promedio = round(valores_criterio.mean(),3)
     
     return maximo, minimo, promedio
 
@@ -112,14 +112,11 @@ def revisar_estructuras(generos_peliculas, peliculas_por_genero, info_peliculas)
     for genero in generos_peliculas:
         print(f"    - {genero}")
 
-
+    print("\nTítulos de películas por genero:")
 #========= se modificaron unos datos=========
-    #print("\nTítulos de películas por genero:")
     #for genero in peliculas_por_genero:
     #    print(f"    genero: {genero[0]}")
-    #    for titulo in genero[1]:
-    #        print(f"        - {titulo}")            
-    print("\nTítulos de películas por genero:")
+    #    for titulo in genero[1]:         
     for genero, peliculas in peliculas_por_genero.items():
         print(f"    genero: {genero}")
         for titulo in peliculas:
