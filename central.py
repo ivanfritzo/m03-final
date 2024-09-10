@@ -3,20 +3,22 @@ import pandas as pd
 # Parte 1: Cargar Datos
 def cargar_datos(lineas_archivos):
     df = pd.read_csv("movies.csv")
-
-    # Crea un conjunto para almacenar los generos
-    generos_peliculas = set(df["generos"])
+    # Crear un conjunto 
+    generos_peliculas = set()
+    # Recorrer cada fila en generos, los separa y añade al conjunto
+    df['generos'].str.split(';').apply(generos_peliculas.update)
 
     # Crear un diccionario de películas por género
     peliculas_por_genero = {}
     #Este es un metodo de la libreria pandas que permite recorrer cada fila del DataFrame
     for index, row in df.iterrows():
         titulo = row["titulo"]
-        generos = row["generos"].split(", ")
+        generos = row["generos"].split(";")
         for genero in generos:
             if genero not in peliculas_por_genero:
                 peliculas_por_genero[genero] = []
             peliculas_por_genero[genero].append(titulo)      
+
 
     # Crear una lista con el formato (titulo, popularidad, voto promedio, cant de votos y generos)
     info_peliculas = []
@@ -25,7 +27,7 @@ def cargar_datos(lineas_archivos):
         popularidad = row["popularidad"]
         voto_promedio = row["voto_promedio"]
         cantidad_votos = row["cantidad_votos"]
-        generos = row["generos"].split(", ")
+        generos = row["generos"].split(";")
 
         # Crea la tupla con el formato y agrega la informacion
         tupla_pelicula = (titulo, popularidad, voto_promedio, cantidad_votos, generos)
@@ -40,7 +42,6 @@ def obtener_puntaje_y_votos(nombre_pelicula):
 
     # Buscar la pelicula en el DataFrame con el mismo nombre sin importar mayusculas
     pelicula = df[df["titulo"].str.match(f"^{nombre_pelicula}$", case=False)]
-    print(pelicula)
 
     # Extrae el puntaje promedio y la cantidad de votos de la pelicula previamente escrita
     voto_promedio = pelicula["voto_promedio"].values[0]
@@ -78,7 +79,7 @@ def obtener_estadisticas(genero_pelicula, criterio):
     # Calcular el máximo, mínimo y promedio
     maximo = valores_criterio.max()
     minimo = valores_criterio.min()
-    promedio = round(valores_criterio.mean(),3)
+    promedio = round(valores_criterio.mean(),2)
     
     return maximo, minimo, promedio
 
@@ -124,7 +125,7 @@ def revisar_estructuras(generos_peliculas, peliculas_por_genero, info_peliculas)
 
     print("\nInformación de cada película:")
     for pelicula in info_peliculas:
-        print(f"    Nombre: {pelicula[0]}")
+        print(f"      Nombre: {pelicula[0]}")
         print(f"        - Popularidad: {pelicula[1]}")
         print(f"        - Puntaje Promedio: {pelicula[2]}")
         print(f"        - Votos: {pelicula[3]}")
